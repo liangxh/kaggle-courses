@@ -24,14 +24,14 @@ class Course:
 
     @staticmethod
     def factorize_object_and_category(X):
-        for col_name in X.select_dtypes("object", "category"):
+        for col_name in X.select_dtypes(["object", "category"]):
             X[col_name], _ = X[col_name].factorize()
         return X
 
     @staticmethod
     def get_scaled_features(X, features):
         X_scaled = X.loc[:, features]
-        X_scaled = (X_scaled - X_scaled.mean(axis=0)) / X.scaled.std(axis=0)
+        X_scaled = (X_scaled - X_scaled.mean(axis=0)) / X_scaled.std(axis=0)
         return X_scaled
 
     @staticmethod
@@ -47,14 +47,14 @@ class Course:
         sns.catplot(x="MedHouseVal", y="Cluster", data=X, kind="boxen", height=6)
 
     @staticmethod
-    def score_dataset(X, y, model=XGBRegressor()):
+    def score_dataset(X, y, model=XGBRegressor(), scoring="neg_mean_squared_log_error"):
         # AMES 数据可以用
         # df = pd.read_csv("../input/fe-course-data/ames.csv")
         #
         # 提前做好 factorize
         # for colname in X.select_dtypes(["category", "object"]):
         #     X[colname], _ = X[colname].factorize()
-        score = cross_val_score(model, X, y, cv=5, scoring="neg_mean_squared_log_error")
+        score = cross_val_score(model, X, y, cv=5, scoring=scoring)
         score = -1 * score.mean()
         score = np.sqrt(score)
         return score
@@ -66,21 +66,21 @@ class Course:
         return kmeans
 
     @staticmethod
-    def add_cluster_label_as_feature(X, kmeans, X_scaled, label):
+    def add_cluster_label_as_feature(kmeans, X_scaled, label):
         # 添加 cluster 序号作为特征
         # X_scaled 作为 kmeans 的输入
-        X[label] = kmeans.predict(X_scaled)
-        X[label] = X[label].astype("category")
-        return X
+        X_cluster_label = pd.DataFrame()
+        X_cluster_label[label] = kmeans.predict(X_scaled)
+        X_cluster_label[label] = X_cluster_label[label].astype("category")
+        return X_cluster_label
 
     @staticmethod
-    def add_cluster_dist_as_feature(X, kmeans, X_scaled, label_prefix):
+    def add_cluster_dist_as_feature(kmeans, X_scaled, label_prefix):
         # 添加到各个 cluster 中心的距离为特征
         # X_scaled 作为 kmeans 的输入
         X_cd = kmeans.transform(X_scaled)
         X_cd = pd.DataFrame(X_cd, columns=[f"${label_prefix}_{i}" for i in range(X_cd.shape[1])])
-        X = X.join(X_cd)
-        return X
+        return X_cd
 
     @staticmethod
     def inspect_relationship_between_k_means_label_and_target(X, y, features, label_y, label_cluster="Cluster"):
@@ -111,8 +111,8 @@ def main():
     kmeans = Course.get_kmeans_model(X_scaled)
 
     # 添加特征
-    X = Course.add_cluster_label_as_feature(X, kmeans, X_scaled, label_cluster)
-    X = Course.add_cluster_dist_as_feature(X, kmeans, X_scaled, label_cluster_dist_prefix)
+    X = X.join(Course.add_cluster_label_as_feature(kmeans, X_scaled, label_cluster))
+    X = X.join(Course.add_cluster_dist_as_feature(kmeans, X_scaled, label_cluster_dist_prefix))
 
     # 查看聚类和目标的关系
     Course.inspect_relationship_between_k_means_label_and_target(X, y, features, label_y, label_cluster)
