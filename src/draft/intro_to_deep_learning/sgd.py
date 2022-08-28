@@ -23,7 +23,7 @@ plt.rc('animation', html='html5')
 @commandr.command
 def fuel_economy_demo():
     # 读取数据
-    fuel = pd.read_csv('../../input/dl-course-data/fuel.csv')
+    fuel = pd.read_csv('../../../input/dl-course-data/fuel.csv')
 
     # 生成训练样本
     X = fuel.copy()

@@ -1,3 +1,6 @@
+.DS_Store
 .idea/
 input/**/*.csv
 **/.ipynb_checkpoints/*
+*.egg-info
+

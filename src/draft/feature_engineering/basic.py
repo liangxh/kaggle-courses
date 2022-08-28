@@ -18,7 +18,7 @@ class Course:
     @staticmethod
     def load_data():
         # 数据读取
-        df = pd.read_csv("../../input/fe-course-data/ames.csv")
+        df = pd.read_csv("../../../input/fe-course-data/ames.csv")
         X = df.copy()
         y = X.pop("SalePrice")
         return df, X, y

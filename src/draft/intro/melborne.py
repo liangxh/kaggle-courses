@@ -34,7 +34,7 @@ def train_random_forest(X, y):
 
 
 def main():
-    melbourne_file_path = '../../input/melbourne-housing-snapshot/melb_data.csv'
+    melbourne_file_path = '../../../input/melbourne-housing-snapshot/melb_data.csv'
     melbourne_data = pd.read_csv(melbourne_file_path)
     melbourne_data.describe()
 
