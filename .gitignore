@@ -3,4 +3,6 @@
 input/**/*.csv
 **/.ipynb_checkpoints/*
 *.egg-info
+data/*.csv
+data/**/*.csv
 
