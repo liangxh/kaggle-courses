@@ -82,5 +82,21 @@ class DataLoader:
     def load_movie_lens_1m(cls) -> (DataFrame, DataFrame):
         df = pd.read_csv(os.path.join(DIR_DATA, 'fe-course-data/movielens1m.csv'))
         X = df.copy()
-        y = X.pop("Rating")
+        y = X.pop('Rating')
         return X, y
+
+    @classmethod
+    def load_melbourne_housing(cls) -> (DataFrame, DataFrame):
+        df = pd.read_csv(os.path.join(DIR_DATA, 'competitions/melbourne-housing-snapshot/melb_data.csv'))
+        X = df.copy()
+        y = X.pop('Price')
+        return X, y
+
+    @classmethod
+    def load_home_data(cls) -> (DataFrame, DataFrame):
+        train = pd.read_csv(os.path.join(DIR_DATA, 'competitions/home-data-for-ml-course/train.csv'), index_col='Id')
+        X = train.copy()
+        y = X.pop('SalePrice')
+
+        X_test = pd.read_csv(os.path.join(DIR_DATA, 'competitions/home-data-for-ml-course/test.csv'), index_col='Id')
+        return X, y, X_test
